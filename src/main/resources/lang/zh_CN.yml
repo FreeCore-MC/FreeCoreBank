@@ -1,0 +1,70 @@
+# FreeCoreBank 简体中文语言文件
+# 支持 MiniMessage 格式：https://docs.advntr.dev/minimessage/format.html
+
+prefix: '<gradient:gold:yellow><bold>[银行]</bold></gradient> '
+
+messages:
+  no-permission: '<red>你没有权限执行此操作。</red>'
+  reload-success: '<green>配置已重载。在线利率：<online_rate>%，离线利率：<offline_rate>%</green>'
+  reload-failed: '<red>配置重载失败：<error></red>'
+  usage: '<red>用法：/bank 或 /bank reload</red>'
+  console-only: '<red>控制台只能使用 /bank reload。</red>'
+  account-error: '<red>无法读取银行账户，请稍后再试。</red>'
+  amount-positive: '<red>金额必须大于 0。</red>'
+  wallet-insufficient: '<red>钱包余额不足，当前余额：<balance></red>'
+  bank-insufficient: '<red>银行余额不足，当前余额：<balance></red>'
+  deposit-success: '<green>已存入 <amount> H币，银行余额：<balance></green>'
+  withdraw-success: '<green>已取出 <amount> H币，银行余额：<balance></green>'
+  deposit-refunded: '<red>存款失败，资金已退回钱包。</red>'
+  withdraw-restored: '<red>取款失败，银行余额已恢复。</red>'
+  bank-unavailable: '<red>银行暂时不可用，请稍后再试。</red>'
+  sign-no-space: '<red>附近没有可用于输入的安全空间，请换个位置重试。</red>'
+  sign-opened: '<yellow>请在告示牌第一行输入金额，然后点击“完成”。</yellow>'
+  sign-invalid: '<red>金额格式无效，请输入大于 0 且最多两位小数的数字。</red>'
+  sign-timeout: '<red>自定义金额输入已超时。</red>'
+  sign-cancelled: '<gray>自定义金额输入已取消。</gray>'
+
+gui:
+  main:
+    title: '<gradient:gold:yellow><bold>FreeCore 银行</bold></gradient>'
+    account:
+      name: '<gold>账户概览</gold>'
+      bank-balance: '<gray>银行余额：</gray><yellow><balance></yellow>'
+      wallet-balance: '<gray>钱包余额：</gray><green><balance></green>'
+      settled-interest: '<aqua>本次结算利息：<interest></aqua>'
+    deposit:
+      name: '<green>存钱</green>'
+      lore:
+        - '<gray>把钱包中的 H币存入银行</gray>'
+        - '<yellow>点击选择存入金额</yellow>'
+    withdraw:
+      name: '<aqua>取钱</aqua>'
+      lore:
+        - '<gray>把银行中的 H币取回钱包</gray>'
+        - '<yellow>点击选择取出金额</yellow>'
+    interest:
+      name: '<yellow>每日利息</yellow>'
+      online: '<gray>当天上线：</gray><green><rate>%</green>'
+      offline: '<gray>当天未上线：</gray><white><rate>%</white>'
+      description: '<gray>利息按完整自然日复利结算</gray>'
+  amount:
+    deposit-title: '<green><bold>银行 · 存钱</bold></green>'
+    withdraw-title: '<aqua><bold>银行 · 取钱</bold></aqua>'
+    deposit-name: '<green>存入 <amount> H币</green>'
+    withdraw-name: '<aqua>取出 <amount> H币</aqua>'
+    confirm-lore: '<gray>点击确认</gray>'
+    deposit-all-name: '<gold>存入全部</gold>'
+    withdraw-all-name: '<gold>取出全部</gold>'
+    available: '<gray>当前可操作：</gray><yellow><amount></yellow>'
+    custom-name: '<light_purple>自定义金额</light_purple>'
+    custom-lore:
+      - '<gray>打开告示牌输入数字</gray>'
+      - '<yellow>最多支持两位小数</yellow>'
+    back-name: '<white>返回</white>'
+    back-lore: '<gray>返回银行主页</gray>'
+
+sign:
+  line-1: '请输入金额'
+  line-2: '仅填写第一行'
+  line-3: '最多两位小数'
+  line-4: '点击完成确认'

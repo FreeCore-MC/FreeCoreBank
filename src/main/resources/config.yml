@@ -1,0 +1,31 @@
+# FreeCoreBank configuration
+
+settings:
+  language: zh_CN
+
+# sqlite preserves the current single-server behavior. Switch to mysql only after
+# a verified maintenance-window migration while both Minecraft servers are stopped.
+storage:
+  type: sqlite
+  mysql:
+    host: 127.0.0.1
+    port: 3306
+    database: freecore_bank
+    username: fc_bank
+    password: ''
+
+# Rates are percentages, so 1.0 means one percent per natural day.
+interest:
+  online-rate-percent: 1.0
+  offline-rate-percent: 0.5
+  timezone: Asia/Shanghai
+
+menu:
+  amounts:
+    - 100
+    - 1000
+    - 10000
+    - 100000
+
+sign-input:
+  timeout-seconds: 60

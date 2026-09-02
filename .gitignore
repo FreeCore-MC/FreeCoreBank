@@ -1,0 +1,21 @@
+# Build outputs and caches
+.gradle/
+build/
+target/
+out/
+
+# IDE and local files
+.idea/
+.vscode/
+*.iml
+*.class
+
+# Logs, temporary files, and local secrets
+*.log
+*.tmp
+*.bak
+.env
+.env.*
+*.secret
+*.key
+*.pem

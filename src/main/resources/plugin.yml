@@ -1,0 +1,23 @@
+name: FreeCoreBank
+version: 1.0.0
+main: io.github.freecorebank.FreeCoreBankPlugin
+api-version: '1.21'
+authors: [FreeCore]
+description: FreeCore 银行系统，支持存取款和按上线情况计算每日利息
+depend: [Vault]
+softdepend: [FreeCoreEssentials]
+libraries:
+  - org.xerial:sqlite-jdbc:3.45.3.0
+  - com.mysql:mysql-connector-j:8.4.0
+commands:
+  bank:
+    description: 打开 FreeCore 银行菜单
+    usage: /bank [reload]
+    permission: freecorebank.use
+permissions:
+  freecorebank.use:
+    description: 使用银行菜单
+    default: true
+  freecorebank.reload:
+    description: 重载银行配置
+    default: op
