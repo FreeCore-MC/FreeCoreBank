@@ -3,6 +3,7 @@ package io.github.freecorebank.bank;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.UUID;
 
 /** Storage contract shared by the local SQLite and cross-server MySQL backends. */
@@ -17,6 +18,8 @@ public interface BankStore extends AutoCloseable {
 
     BankDatabase.Account subtractBalance(UUID uuid, String name, BigDecimal amount,
                                          LocalDate today, String transactionType) throws SQLException;
+
+    Map<String, BigDecimal> balanceSnapshot() throws SQLException;
 
     @Override
     void close() throws SQLException;

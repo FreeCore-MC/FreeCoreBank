@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -153,6 +155,22 @@ public final class BankDatabase implements BankStore {
         } finally {
             connection.setAutoCommit(true);
         }
+    }
+
+    @Override
+    public synchronized Map<String, BigDecimal> balanceSnapshot() throws SQLException {
+        Map<String, BigDecimal> balances = new LinkedHashMap<>();
+        try (PreparedStatement query = connection.prepareStatement(
+                "SELECT player_name, balance FROM bank_accounts");
+             ResultSet result = query.executeQuery()) {
+            while (result.next()) {
+                String name = result.getString(1);
+                if (name != null && !name.isBlank()) {
+                    balances.put(name, money(new BigDecimal(result.getString(2))));
+                }
+            }
+        }
+        return Map.copyOf(balances);
     }
 
     private void ensureAccount(UUID uuid, String name, LocalDate today) throws SQLException {

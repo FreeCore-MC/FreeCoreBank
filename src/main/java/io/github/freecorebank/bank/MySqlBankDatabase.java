@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -128,6 +130,22 @@ public final class MySqlBankDatabase implements BankStore {
             insertTransaction(uuid, transactionType, delta.abs(), balance);
             return new BankDatabase.Account(name, balance, before.settledThrough(), before.accrual());
         });
+    }
+
+    @Override
+    public synchronized Map<String, BigDecimal> balanceSnapshot() throws SQLException {
+        Map<String, BigDecimal> balances = new LinkedHashMap<>();
+        try (PreparedStatement query = connection.prepareStatement(
+                "SELECT player_name, balance FROM bank_accounts");
+             ResultSet result = query.executeQuery()) {
+            while (result.next()) {
+                String name = result.getString(1);
+                if (name != null && !name.isBlank()) {
+                    balances.put(name, money(result.getBigDecimal(2)));
+                }
+            }
+        }
+        return Map.copyOf(balances);
     }
 
     private void ensureAccount(UUID uuid, String name, LocalDate today) throws SQLException {

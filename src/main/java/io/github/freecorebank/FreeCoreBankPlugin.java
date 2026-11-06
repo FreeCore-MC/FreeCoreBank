@@ -17,13 +17,20 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.sql.SQLException;
+import java.util.Map;
 
 public final class FreeCoreBankPlugin extends JavaPlugin implements Listener {
     private BankStore database;
     private BankService service;
     private CustomAmountInput customAmountInput;
+
+    /** Read-only snapshot used by FreeCoreEssentials wealth leaderboards. */
+    public Map<String, BigDecimal> getBalanceSnapshot() {
+        return service == null ? Map.of() : service.balanceSnapshot();
+    }
 
     @Override
     public void onEnable() {

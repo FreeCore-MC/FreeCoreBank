@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public final class BankService {
@@ -19,8 +21,10 @@ public final class BankService {
     private final Economy economy;
     private final Lang lang;
     private volatile BankSettings settings;
+    private volatile Map<String, BigDecimal> balanceSnapshot;
 
-    public BankService(org.bukkit.plugin.Plugin plugin, BankStore database, BankSettings settings, Lang lang) {
+    public BankService(org.bukkit.plugin.Plugin plugin, BankStore database, BankSettings settings, Lang lang)
+            throws SQLException {
         this.plugin = plugin;
         this.database = database;
         this.settings = settings;
@@ -28,6 +32,7 @@ public final class BankService {
         RegisteredServiceProvider<Economy> registration = plugin.getServer().getServicesManager()
                 .getRegistration(Economy.class);
         this.economy = Objects.requireNonNull(registration, "Vault 经济服务未注册").getProvider();
+        this.balanceSnapshot = database.balanceSnapshot();
     }
 
     public void reloadSettings() {
@@ -44,7 +49,9 @@ public final class BankService {
     public BankDatabase.Account open(Player player) throws SQLException {
         LocalDate today = LocalDate.now(settings.zoneId());
         database.markOnline(player.getUniqueId(), player.getName(), today);
-        return database.settleInterest(player.getUniqueId(), player.getName(), settings, today);
+        BankDatabase.Account account = database.settleInterest(player.getUniqueId(), player.getName(), settings, today);
+        updateSnapshot(account.playerName(), account.balance());
+        return account;
     }
 
     public TransactionResult deposit(Player player, BigDecimal amount) {
@@ -62,6 +69,7 @@ public final class BankService {
             try {
                 BankDatabase.Account updated = database.addBalance(player.getUniqueId(), player.getName(), amount,
                         LocalDate.now(settings.zoneId()), "DEPOSIT");
+                updateSnapshot(updated.playerName(), updated.balance());
                 return TransactionResult.success(updated, lang.message("messages.deposit-success",
                         "amount", format(amount), "balance", format(updated.balance())));
             } catch (SQLException exception) {
@@ -88,10 +96,12 @@ public final class BankService {
             }
             BankDatabase.Account updated = database.subtractBalance(player.getUniqueId(), player.getName(), amount,
                     LocalDate.now(settings.zoneId()), "WITHDRAW");
+            updateSnapshot(updated.playerName(), updated.balance());
             EconomyResponse deposit = economy.depositPlayer(player, amount.doubleValue());
             if (!deposit.transactionSuccess()) {
-                database.addBalance(player.getUniqueId(), player.getName(), amount,
+                BankDatabase.Account restored = database.addBalance(player.getUniqueId(), player.getName(), amount,
                         LocalDate.now(settings.zoneId()), "ROLLBACK");
+                updateSnapshot(restored.playerName(), restored.balance());
                 return TransactionResult.failure(lang.message("messages.withdraw-restored"));
             }
             return TransactionResult.success(updated, lang.message("messages.withdraw-success",
@@ -104,6 +114,17 @@ public final class BankService {
 
     public BigDecimal walletBalance(Player player) {
         return money(BigDecimal.valueOf(Math.max(0, economy.getBalance(player))));
+    }
+
+    public Map<String, BigDecimal> balanceSnapshot() {
+        return balanceSnapshot;
+    }
+
+    private void updateSnapshot(String playerName, BigDecimal balance) {
+        Map<String, BigDecimal> updated = new LinkedHashMap<>(balanceSnapshot);
+        updated.entrySet().removeIf(entry -> entry.getKey().equalsIgnoreCase(playerName));
+        updated.put(playerName, money(balance));
+        balanceSnapshot = Map.copyOf(updated);
     }
 
     public static BigDecimal money(BigDecimal amount) {
